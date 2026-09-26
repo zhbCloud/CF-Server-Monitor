@@ -41,7 +41,7 @@ if (fs.existsSync(distDir)) {
 }
 
 console.log('Building theme frontend...');
-execSync('npx vite build', { cwd: rootDir, stdio: 'inherit', env: { ...process.env, VITE_BASE: './' } });
+execSync('npx vite build', { cwd: rootDir, stdio: 'inherit', env: { ...process.env, VITE_BASE: './', VITE_ROUTER_MODE: 'hash' } });
 
 // 构建时注入配置到 HTML
 const htmlFiles = fs.readdirSync(distDir).filter(f => f.endsWith('.html'));

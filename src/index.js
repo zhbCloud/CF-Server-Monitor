@@ -203,10 +203,7 @@ export default {
 
     if (method === 'GET' && path === '/admin/') {
       const target = new URL(request.url);
-      const search = target.search;
       target.pathname = '/admin';
-      target.search = '';
-      target.hash = `admin${search}`;
       return Response.redirect(target.toString(), 302);
     }
 

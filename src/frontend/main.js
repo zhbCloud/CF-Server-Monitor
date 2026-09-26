@@ -289,35 +289,14 @@ const renderStartupTurnstile = async (siteKey, apiIndex) => {
   }
 }
 
-const isAdminPath = () => {
-  return window.location.pathname === '/admin' || window.location.pathname.startsWith('/admin/')
-}
-
-const bridgeAdminPathToHashRoute = () => {
-  if (!isAdminPath()) return
-  const hash = window.location.hash || ''
-
-  const legacyHashSuffix = hash.startsWith('#/admin')
-    ? hash.slice('#/admin'.length)
-    : hash.startsWith('#admin')
-      ? hash.slice('#admin'.length)
-      : ''
-  const adminHash = `#admin${legacyHashSuffix || window.location.search || ''}`
-  if (hash === adminHash) return
-
-  window.history.replaceState(null, '', `/admin${adminHash}`)
-}
-
 async function initApp() {
-  bridgeAdminPathToHashRoute()
-
   // Load frontend runtime config (apiBase) first so all subsequent
   // HTTP / WebSocket requests go through the configured origin.
   await initConfig()
 
   const isMultipleMode = hasMultipleApiBases()
-  const currentHash = window.location.hash || ''
-  const isAdmin = isAdminPath() || currentHash.startsWith('#admin') || currentHash.startsWith('#/admin')
+  const currentPath = router.options.history.location.split(/[?#]/)[0]
+  const isAdmin = currentPath === '/admin' || currentPath.startsWith('/admin/')
 
   // 多站模式公开页面：一次 getAll 获取所有站点配置，检查 Turnstile key 是否可共享。
   let config
@@ -388,7 +367,7 @@ async function initApp() {
   app.use(router)
   app.mount('#app').$nextTick(() => {
     if (!isAdmin && !config.is_public && !config.authorization) {
-      window.location.replace('/admin#admin')
+      window.location.replace(router.resolve('/admin').href)
     }
     const loading = document.getElementById('loading')
     if (loading) {

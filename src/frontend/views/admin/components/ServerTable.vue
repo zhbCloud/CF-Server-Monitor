@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div id="tab-servers" class="tab-content" :class="{ active: activeTab === 'servers' }">
     <div class="alert alert-info alert-stack">
       <div class="alert-line">
@@ -176,6 +176,7 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { getFlagRegionCode, formatBytes } from '../../../utils/api'
 import { getPublicAssetUrl } from '../../../utils/config'
@@ -476,5 +477,10 @@ const getAgentVersionClass = (version) => {
 }
 const getServerQuery = () => props.selectedApiIndex ? `?apiIndex=${props.selectedApiIndex}` : ''
 const getDefaultServerRoute = (server) => `/server/${server.id}${getServerQuery()}`
-const getPublicServerHref = (server) => `/#/server/${encodeURIComponent(server.id)}${getServerQuery()}`
+const router = useRouter()
+const getPublicServerHref = (server) => router.resolve({
+  name: 'Server',
+  params: { id: server.id },
+  query: props.selectedApiIndex ? { apiIndex: props.selectedApiIndex } : {}
+}).href
 </script>
